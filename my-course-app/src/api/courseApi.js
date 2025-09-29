@@ -1,30 +1,24 @@
-// Simulasi data (belum pakai backend)
-let courses = [
-  { id: 1, title: "React untuk Pemula", description: "Belajar dasar React.js" },
-  { id: 2, title: "Tailwind CSS", description: "Membuat UI modern dengan Tailwind" },
-  { id: 3, title: "JavaScript Lanjutan", description: "Asynchronous, Fetch API, dll." }
-];
+// src/api/courseApi.js
+const BASE_URL = "https://open-api.delcom.org/api/v1"
 
-// Get all courses
-export function getAllCourses() {
-  return Promise.resolve(courses);
+export async function getAllCourses(token) {
+  const res = await fetch(`${BASE_URL}/courses`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  if (!res.ok) throw new Error("Gagal mengambil data kursus")
+  const data = await res.json()
+  return data.data.courses
 }
 
-// Add course
-export function addCourse(course) {
-  const newCourse = { id: Date.now(), ...course };
-  courses.push(newCourse);
-  return Promise.resolve(newCourse);
-}
-
-// Update course
-export function updateCourse(id, updatedCourse) {
-  courses = courses.map(c => (c.id === id ? { ...c, ...updatedCourse } : c));
-  return Promise.resolve(updatedCourse);
-}
-
-// Delete course
-export function deleteCourse(id) {
-  courses = courses.filter(c => c.id !== id);
-  return Promise.resolve(true);
+export async function getCourseDetail(id, token) {
+  const res = await fetch(`${BASE_URL}/courses/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  if (!res.ok) throw new Error("Gagal mengambil detail kursus")
+  const data = await res.json()
+  return data.data.course
 }

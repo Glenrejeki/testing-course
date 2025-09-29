@@ -1,23 +1,17 @@
-export default function CourseCard({ course, onEdit, onDelete }) {
+export default function CourseCard({ course, onDelete }) {
   return (
-    <div className="bg-white p-4 rounded-xl shadow-md flex justify-between items-center">
-      <div>
-        <h3 className="text-xl font-semibold text-gray-800">{course.title}</h3>
-        <p className="text-gray-600">{course.description}</p>
-      </div>
-      <div className="flex gap-2">
-        <button
-          onClick={() => onEdit(course)}
-          className="px-3 py-1 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600"
-        >
-          Edit
-        </button>
-        <button
-          onClick={() => onDelete(course._id)}
-          className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
-        >
-          Delete
-        </button>
+    <div className="card w-80 bg-base-100 shadow-xl">
+      <div className="card-body">
+        <h2 className="card-title">{course.title}</h2>
+        <p>{course.description}</p>
+        <div className="card-actions justify-end">
+          <button
+            className="btn btn-error btn-sm"
+            onClick={() => onDelete(course.id)}
+          >
+            Hapus
+          </button>
+        </div>
       </div>
     </div>
   );
