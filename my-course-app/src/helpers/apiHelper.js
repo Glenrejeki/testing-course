@@ -1,36 +1,27 @@
-const apiHelper = (() => {
-  async function fetchData(url, options) {
-    // Fix URL to remove trailing slash before query parameters
-    const urlQuery = url.includes("?") ? url.split("?")[1] : "";
-    const urlWithoutQuery = url.replace(`?${urlQuery}`, "");
-    const fixUrl = urlWithoutQuery.endsWith("/")
-      ? urlWithoutQuery.slice(0, -1)
-      : urlWithoutQuery;
-    const fullUrl = fixUrl + (urlQuery ? `?${urlQuery}` : "");
-
-    return fetch(fullUrl, {
-      ...options,
-      mode: "cors",
-      headers: {
-        ...options.headers,
-        Authorization: `Bearer ${getAccessToken()}`,
-      },
-    });
-  }
-
-  function putAccessToken(token) {
-    localStorage.setItem("accessToken", token);
-  }
-
-  function getAccessToken() {
+const apiHelper = {
+  getAccessToken() {
     return localStorage.getItem("accessToken");
-  }
+  },
 
-  return {
-    fetchData,
-    putAccessToken,
-    getAccessToken,
-  };
-})();
+  putAccessToken(token) {
+    localStorage.setItem("accessToken", token);
+  },
+
+  async fetchData(url, options = {}) {
+    const token = this.getAccessToken();
+    const headers = {
+      ...options.headers,
+      Authorization: token ? `Bearer ${token}` : "",
+      "Content-Type": "application/json",
+    };
+
+    const response = await fetch(url, { ...options, headers });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Fetch error");
+    }
+    return response.json();
+  },
+};
 
 export default apiHelper;

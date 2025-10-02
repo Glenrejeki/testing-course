@@ -1,84 +1,60 @@
-import { useDispatch, useSelector } from "react-redux";
-import useInput from "../../../hooks/useInput";
-import {
-  asyncSetIsAuthRegister,
-  setIsAuthRegisterActionCreator,
-} from "../states/action";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { postRegister } from "../api/authApi";
 
-function RegisterPage() {
-  const dispatch = useDispatch();
+export default function RegisterPage() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  const isAuthRegister = useSelector((state) => state.isAuthRegister);
-
-  const [loading, setLoading] = useState(false);
-
-  const [name, onChangeName] = useInput("");
-  const [email, onChangeEmail] = useInput("");
-  const [password, onChangePassword] = useInput("");
-
-  // 1. Periksa apakah register telah selesai diproses
-  useEffect(() => {
-    if (isAuthRegister === true) {
-      setLoading(false);
-      dispatch(setIsAuthRegisterActionCreator(false));
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await postRegister(name, email, password);
+      navigate("/auth/login");
+    } catch (err) {
+      setError(err.message);
     }
-  }, [isAuthRegister]);
-
-  // Fungsi untuk menangani pengiriman form. Akan memicu efek pada step-1
-  async function onSubmitHandler(event) {
-    event.preventDefault();
-    setLoading(true);
-    dispatch(asyncSetIsAuthRegister(name, email, password));
-  }
+  };
 
   return (
-    <form onSubmit={onSubmitHandler} method="POST">
-      <div className="mb-3">
-        <label className="form-label">Nama Lengkap</label>
+    <div className="max-w-md mx-auto mt-12 p-6 border rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-6">Register</h2>
+      {error && <p className="text-red-500">{error}</p>}
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           type="text"
-          onChange={onChangeName}
-          className="form-control"
-          required
+          placeholder="Name"
+          className="input input-bordered"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
-      </div>
-      <div className="mb-3">
-        <label className="form-label">Alamat Email</label>
         <input
           type="email"
-          onChange={onChangeEmail}
-          className="form-control"
-          required
+          placeholder="Email"
+          className="input input-bordered"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
-      </div>
-      <div className="mb-3">
-        <label className="form-label">Kata Sandi</label>
         <input
           type="password"
-          onChange={onChangePassword}
-          className="form-control"
-          required
+          placeholder="Password"
+          className="input input-bordered"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
-      </div>
-      <div className="mb-3 pt-3 text-end">
-        {loading ? (
-          <button className="btn btn-primary" disabled>
-            <span
-              className="spinner-border spinner-border-sm"
-              role="status"
-              aria-hidden="true"
-            ></span>
-            &nbsp;Memuat...
-          </button>
-        ) : (
-          <button type="submit" className="btn btn-primary">
-            Daftar
-          </button>
-        )}
-      </div>
-    </form>
+        <button type="submit" className="btn btn-primary">
+          Register
+        </button>
+      </form>
+      <p className="mt-4">
+        Sudah punya akun?{" "}
+        <Link to="/auth/login" className="text-blue-600">
+          Login
+        </Link>
+      </p>
+    </div>
   );
 }
-
-export default RegisterPage;

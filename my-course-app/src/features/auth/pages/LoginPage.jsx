@@ -1,90 +1,52 @@
-import { useDispatch, useSelector } from "react-redux";
-import useInput from "../../../hooks/useInput";
-import {
-  asyncSetIsAuthLogin,
-  setIsAuthLoginActionCreator,
-} from "../states/action";
-import { useEffect, useState } from "react";
-import apiHelper from "../../../helpers/apiHelper";
-import { asyncSetProfile, setIsProfile } from "../../users/states/action";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { postLogin } from "../api/authApi";
 
-function LoginPage() {
-  const dispatch = useDispatch();
+export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  const isAuthLogin = useSelector((state) => state.isAuthLogin);
-  const isProfile = useSelector((state) => state.isProfile);
-
-  const [loading, setLoading] = useState(false);
-  const [email, onEmailChange] = useInput("");
-  const [password, onPasswordChange] = useInput("");
-
-  // 1. Periksa apakah login berhasil
-  useEffect(() => {
-    if (isAuthLogin === true) {
-      const authToken = apiHelper.getAccessToken();
-      if (authToken) {
-        dispatch(asyncSetProfile());
-      } else {
-        setLoading(false);
-        dispatch(setIsAuthLoginActionCreator(false));
-      }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await postLogin(email, password);
+      navigate("/"); // redirect setelah login
+    } catch (err) {
+      setError(err.message);
     }
-  }, [isAuthLogin]);
-
-  // 2. Jika gagal login set loading dan status isAuthLogin ke false
-  useEffect(() => {
-    if (isProfile) {
-      setLoading(false);
-      dispatch(setIsAuthLoginActionCreator(false));
-      dispatch(setIsProfile(false));
-    }
-  }, [isProfile]);
-
-  // Fungsi untuk menangani pengiriman form. Akan memicu efek pada step-1
-  async function onSubmitHandler(event) {
-    event.preventDefault();
-    setLoading(true);
-    dispatch(asyncSetIsAuthLogin(email, password));
-  }
+  };
 
   return (
-    <form onSubmit={onSubmitHandler} method="POST">
-      <div className="mb-3">
-        <label className="form-label">Alamat Email</label>
+    <div className="max-w-md mx-auto mt-12 p-6 border rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-6">Login</h2>
+      {error && <p className="text-red-500">{error}</p>}
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           type="email"
-          onChange={onEmailChange}
-          className="form-control"
-          required
+          placeholder="Email"
+          className="input input-bordered"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
-      </div>
-      <div className="mb-3">
-        <label className="form-label">Kata Sandi</label>
         <input
           type="password"
-          onChange={onPasswordChange}
-          className="form-control"
-          required
+          placeholder="Password"
+          className="input input-bordered"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
-      </div>
-      <div className="mb-3 pt-3 text-end">
-        {loading ? (
-          <button className="btn btn-primary" disabled>
-            <span
-              className="spinner-border spinner-border-sm"
-              role="status"
-              aria-hidden="true"
-            ></span>
-            &nbsp;Memuat...
-          </button>
-        ) : (
-          <button type="submit" className="btn btn-primary">
-            Masuk
-          </button>
-        )}
-      </div>
-    </form>
+        <button type="submit" className="btn btn-primary">
+          Login
+        </button>
+      </form>
+      <p className="mt-4">
+        Belum punya akun?{" "}
+        <Link to="/auth/register" className="text-blue-600">
+          Register
+        </Link>
+      </p>
+    </div>
   );
 }
-
-export default LoginPage;

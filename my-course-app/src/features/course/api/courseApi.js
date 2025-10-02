@@ -1,24 +1,11 @@
-// src/api/courseApi.js
-const BASE_URL = "https://open-api.delcom.org/api/v1"
+import apiHelper from "./apiHelper";
 
-export async function getAllCourses(token) {
-  const res = await fetch(`${BASE_URL}/courses`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-  if (!res.ok) throw new Error("Gagal mengambil data kursus")
-  const data = await res.json()
-  return data.data.courses
+const BASE_URL = "http://localhost:3000/api";
+
+function _url(path) {
+  return `${BASE_URL}${path}`;
 }
 
-export async function getCourseDetail(id, token) {
-  const res = await fetch(`${BASE_URL}/courses/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-  if (!res.ok) throw new Error("Gagal mengambil detail kursus")
-  const data = await res.json()
-  return data.data.course
+export async function getAllCourses() {
+  return apiHelper.fetchData(_url("/courses"));
 }
