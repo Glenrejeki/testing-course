@@ -1,5 +1,5 @@
 import { createContext, useState, useContext } from "react";
-import { login } from "../api/authAPI";
+import { postLogin, postRegister } from "../api/authApi";
 
 const AuthContext = createContext();
 
@@ -8,9 +8,15 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(localStorage.getItem("token") || "");
 
   const handleLogin = async (email, password) => {
-    const data = await login(email, password);
+    const data = await postLogin(email, password);
+    setUser(data.data.user);
     setToken(data.data.token);
     localStorage.setItem("token", data.data.token);
+    return data;
+  };
+
+  const handleRegister = async (name, email, password) => {
+    const data = await postRegister(name, email, password);
     return data;
   };
 
@@ -21,7 +27,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, token, handleLogin, logout }}>
+    <AuthContext.Provider value={{ user, token, handleLogin, handleRegister, logout }}>
       {children}
     </AuthContext.Provider>
   );
