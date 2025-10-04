@@ -9,9 +9,18 @@ export function AuthProvider({ children }) {
 
   const handleLogin = async (email, password) => {
     const data = await postLogin(email, password);
-    setUser(data.data.user);
-    setToken(data.data.token);
-    localStorage.setItem("token", data.data.token);
+
+    // Struktur response dari Delcom API biasanya:
+    // { success: true, message: "Login success", data: { token, user } }
+    const tokenData = data?.data?.token;
+    const userData = data?.data?.user;
+
+    if (!tokenData) throw new Error("Token tidak ditemukan dalam response.");
+
+    localStorage.setItem("token", tokenData);
+    setToken(tokenData);
+    setUser(userData);
+
     return data;
   };
 
@@ -21,9 +30,10 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
-    setUser(null);
-    setToken("");
     localStorage.removeItem("token");
+    setToken("");
+    setUser(null);
+    window.location.href = "/login";
   };
 
   return (

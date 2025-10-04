@@ -1,28 +1,30 @@
-import { useEffect, useState } from "react";
-import { useAuth } from "@/features/auth/states/authContext";
-import { getAllCourses } from "../api/courseAPI";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { asyncGetAllCourses } from "@/features/courses/states/action";
+import { Link } from "react-router-dom";
 
 export default function CourseListPage() {
-  const { token } = useAuth();
-  const [courses, setCourses] = useState([]);
+  const dispatch = useDispatch();
+  const { courses } = useSelector((state) => state.courses);
 
   useEffect(() => {
-    async function load() {
-      const data = await getAllCourses(token);
-      setCourses(data.data);
-    }
-    if (token) load();
-  }, [token]);
+    dispatch(asyncGetAllCourses());
+  }, [dispatch]);
 
   return (
     <div>
       <h1>Daftar Kursus</h1>
+      <Link to="/courses/new">+ Tambah Kursus Baru</Link>
       <ul>
-        {courses.map((c) => (
-          <li key={c.id}>
-            <a href={`/courses/${c.id}`}>{c.title}</a>
-          </li>
-        ))}
+        {courses && courses.length > 0 ? (
+          courses.map((c) => (
+            <li key={c.id}>
+              <Link to={`/courses/${c.id}`}>{c.title}</Link>
+            </li>
+          ))
+        ) : (
+          <p>Tidak ada kursus tersedia.</p>
+        )}
       </ul>
     </div>
   );

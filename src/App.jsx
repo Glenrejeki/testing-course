@@ -1,26 +1,17 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/features/auth/states/authContext";
+// src/App.jsx
+import { Routes, Route } from "react-router-dom";
+import HomePage from "./features/home/pages/HomePage";
+import LoginPage from "./features/auth/pages/LoginPage";
+import RegisterPage from "./features/auth/pages/RegisterPage";
+import Dashboard from "./features/dashboard/pages/Dashboard";
 
-import LoginPage from "@/features/auth/pages/LoginPage";
-import RegisterPage from "@/features/auth/pages/RegisterPage";
-import ProfilePage from "@/features/users/pages/ProfilePage";
-import CourseListPage from "@/features/courses/pages/CourseListPage";
-import CourseDetailPage from "@/features/courses/pages/CourseDetailPage";
-
-function App() {
+export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/courses" element={<CourseListPage />} />
-          <Route path="/courses/:id" element={<CourseDetailPage />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+    </Routes>
   );
 }
-
-export default App;

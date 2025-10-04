@@ -1,5 +1,3 @@
-// src/features/auth/api/authApi.js
-
 const BASE_URL = import.meta.env.VITE_DELCOM_BASEURL;
 
 export async function postRegister(name, email, password) {

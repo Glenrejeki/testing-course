@@ -10,21 +10,35 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       await handleLogin(email, password);
-      window.location.href = "/courses";
+      window.location.href = "/courses"; // setelah login redirect
     } catch (err) {
       alert("Login gagal: " + err.message);
     }
   };
 
   return (
-    <div>
-      <h1>Login</h1>
+    <div style={{ maxWidth: "400px", margin: "auto", padding: "2rem" }}>
+      <h2>Login</h2>
       <form onSubmit={submit}>
-        <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          style={{ display: "block", margin: "10px 0", width: "100%" }}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          style={{ display: "block", margin: "10px 0", width: "100%" }}
+        />
         <button type="submit">Masuk</button>
       </form>
-      <p>Belum punya akun? <a href="/register">Register</a></p>
+      <p>Belum punya akun? <a href="/register">Daftar di sini</a></p>
     </div>
   );
 }
